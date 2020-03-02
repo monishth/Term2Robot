@@ -58,14 +58,25 @@ public class AStar {
         return backwardsPath;
     }
 
-    public static ArrayList<Direction> directionsFromPath(ArrayList<Node> nodePath){
-        ArrayList<Direction> directions = new ArrayList<>();
+    public static ArrayList<Node.Direction> directionsFromPath(ArrayList<Node> nodePath){
+        ArrayList<Node.Direction> directions = new ArrayList<>();
         for(int i = 0; i < nodePath.size()-1;i++){
             Node startNode = nodePath.get(i);
             Node endNode = nodePath.get(i+1);
             int x = endNode.x-startNode.x;
             int y = endNode.y-startNode.y;
+            if(x == 0){
+                if (y > 0) {
+                    directions.add(Node.Direction.N);
+                } else {
+                    directions.add(Node.Direction.S);
+                }
+            }
+            if(y == 0){
+                if (x > 0){
 
+                }
+            }
         }
     }
 

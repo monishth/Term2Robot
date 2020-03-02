@@ -1,6 +1,10 @@
 package com.tbt;
 
 public class Node implements Comparable<Node>{
+    public enum Direction {
+        N,NE,E,SE,S,SW,W,NW
+    }
+
     public int x;
     public int y;
 
