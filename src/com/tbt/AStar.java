@@ -72,12 +72,9 @@ public class AStar {
                     directions.add(Node.Direction.S);
                 }
             }
-            if(y == 0){
-                if (x > 0){
 
-                }
-            }
         }
+        return directions;
     }
 
     public static double heuristic(Node node, Node goal){
