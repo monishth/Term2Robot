@@ -47,6 +47,33 @@ public class RobotMap {
     }
 
     public void addRectangleObstacle(int x1, int y1, int x2, int y2){
+        ArrayList<Node> obstacleNodes = new ArrayList<>();
+        if(x1 < x2){
+            for(int i = x1; i <= x2; i++){
+                if(y1 < y2){
+                    for (int j = y1; j <= y2;j++){
+                        obstacleNodes.add(grid[i][j]);
+                    }
+                }else{
+                    for (int j = y2; j <= y1;j++){
+                        obstacleNodes.add(grid[i][j]);
+                    }
+                }
+            }
+        }else{
+            for(int i = x2; i <= x1; i++){
+                if(y1 < y2){
+                    for (int j = y1; j <= y2;j++){
+                        obstacleNodes.add(grid[i][j]);
+                    }
+                }else{
+                    for (int j = y2; j <= y1;j++){
+                        obstacleNodes.add(grid[i][j]);
+                    }
+                }
+            }
+        }
 
+        addObstacle(obstacleNodes);
     }
 }

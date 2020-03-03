@@ -85,14 +85,15 @@ public class AStar {
     }
     //astar test
     public static void main(String[] args) {
-        RobotMap robotMap = new RobotMap(7);
-        Node endNode = AStarSearch(robotMap.grid[0][0], robotMap.grid[2][4]);
+        RobotMap robotMap = new RobotMap(20);
+        robotMap.addRectangleObstacle(1,0,4,5);
+        Node endNode = AStarSearch(robotMap.grid[0][0], robotMap.grid[15][4]);
 
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         System.out.println("Start node: 0,0");
         for (Node.Direction dir : endPath){
             System.out.println(dir);
         }
-        System.out.println("End Node: 2,4");
+        System.out.println("End Node: " + endNode);
     }
 }
