@@ -2,3 +2,7 @@ grid size = 125 cm
 middle wall = 40 cm
 
 robot dimensions 19.3 * 14.8
+
+to convert localised bayestion 1d coordinate to 2d x,y grid coordinates:
+
+    (n*1.75)/(2/sqrt(2))

@@ -3,7 +3,8 @@ package com.tbt;
 import java.util.ArrayList;
 
 public class RobotMap {
-    public static final double NODE_LENGTH = 1.25;
+    public static final double NODE_LENGTH = 2;
+    public static final double BOARD_LENTH = 125;
 
     public Node[][] grid;
     public RobotMap(int nodes_per_edge){

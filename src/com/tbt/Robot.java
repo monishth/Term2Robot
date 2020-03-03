@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.tbt.RobotMap.NODE_LENGTH;
+
 public class Robot {
     private final SensorMode colourSensor;
     private final float[] colourSample;
@@ -30,6 +32,7 @@ public class Robot {
 
     private final double sensorRight = 0.9;
     private double moveSuccess = 0.975;
+    private RobotMap map;
 
     public Robot(){
         //Setup Motors
@@ -140,12 +143,17 @@ public class Robot {
         return bayesianProbabilties[getPrediction()];
     }
 
+    public void createPathingMap(){
+        map = new RobotMap(RobotMap.BOARD_LENTH, NODE_LENGTH);
+        map.addRectangleObstacle(0,0,1,1);
+    }
+
     public void followDirectionList(List<Node.Direction> directions, Node.Direction startingDirection){
         Node.Direction currentDirection = startingDirection;
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
             if(currentDirection==nextMovement){
-                moveForward(NODE_SIZE);
+                moveForward(NODE_LENGTH);
             }else{
                 int currentIndex = directionsAsList.indexOf(currentDirection);
                 int requiredDirectionIndex = directionsAsList.indexOf(nextMovement);
@@ -162,10 +170,21 @@ public class Robot {
                         rotate45((requiredDirectionIndex+(8-currentIndex)));
                     }
                 }
-                moveForward(NODE_SIZE);
+                moveForward(NODE_LENGTH);
             }
             currentDirection=nextMovement;
         }
+    }
+
+    private void rotate45(int n) {
+        int rotateAngle = n*45;
+        //TODO: write rotation code
+    }
+
+    private void moveForward(double distance) {
+        int angleToRotate = (int) (distance * 360/17.28);
+        motorRight.rotate(angleToRotate, true);
+        motorLeft.rotate(angleToRotate);
     }
 
     public static void main(String[] args) {
