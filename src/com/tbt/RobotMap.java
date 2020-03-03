@@ -81,4 +81,17 @@ public class RobotMap {
 
         addObstacle(obstacleNodes);
     }
+
+    public void addDiagonalLineObstacle(int x1, int y1, int x2, int y2){
+        ArrayList<Node> obstacleNodes = new ArrayList<>();
+
+        for(int i = x1; i<=x2; i++){
+            for(int j = y1;j<=y2;i--){
+                obstacleNodes.add(grid[i][j]);
+            }
+        }
+    addObstacle(obstacleNodes);
+    }
+
+
 }

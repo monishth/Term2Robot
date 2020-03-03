@@ -8,19 +8,19 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.SensorMode;
 import lejos.robotics.SampleProvider;
-import lejos.utility.Delay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.tbt.AStar.*;
 import static com.tbt.RobotMap.NODE_LENGTH;
 
 public class Robot {
     public SensorMode colourSensor;
     public EV3LargeRegulatedMotor motorRight;
     public EV3LargeRegulatedMotor motorLeft;
-    private SampleProvider gyroSensor;
+    private EV3GyroSensor gyroSensor;
     private float[] angleSample;
     private double[] bayesianProbabilties;
 
@@ -31,9 +31,8 @@ public class Robot {
         //Setup Motors
         motorRight = new EV3LargeRegulatedMotor(MotorPort.A);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
-        gyroSensor = new EV3GyroSensor(SensorPort.S1).getAngleMode();
+        gyroSensor = new EV3GyroSensor(SensorPort.S1);
         colourSensor = new EV3ColorSensor(SensorPort.S2).getRedMode();
-
         angleSample =new float[gyroSensor.sampleSize()];
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
@@ -75,8 +74,31 @@ public class Robot {
     }
 
     private void rotate45(int n) {
-        int rotateAngle = n*45;
-        //TODO: write rotation code
+        int goalAngle = n*45;
+        float kp =  0.8f;
+        gyroSensor.reset();
+        SampleProvider gyroSampleProvider = gyroSensor.getAngleMode();
+        gyroSampleProvider.fetchSample(angleSample, 0);
+        System.out.println(angleSample[0]);
+        float error = goalAngle - angleSample[0];
+        while(Math.abs(error) < 0.5){
+            System.out.println(angleSample[0]);
+            gyroSampleProvider.fetchSample(angleSample, 0);
+            error = goalAngle - angleSample[0];
+
+            motorLeft.setSpeed(150 + Math.abs(error*kp));
+            motorRight.setSpeed(150 + Math.abs(error*kp));
+
+            if(error < 0){
+                motorRight.forward();
+                motorLeft.backward();
+            }else{
+                motorLeft.forward();
+                motorRight.backward();
+            }
+        }
+        motorRight.stop(true);
+        motorLeft.stop();
     }
 
     public void moveForward(double distance) {
@@ -87,9 +109,16 @@ public class Robot {
 
     public static void main(String[] args) {
         Robot robot = new Robot();
-        int bayesionStripLocation = BayesianLocalisation.localise(robot);
+        robot.rotate45(2);
         Button.waitForAnyPress();
+        robot.rotate45(-4);
+        //int bayesionStripLocation = BayesianLocalisation.localise(robot);
         RobotMap map = new RobotMap(125, 4);
+        map.addRectangleObstacle(1,0,4,5);
+        Node endNode = AStarSearch(map.grid[0][0], map.grid[15][4]);
+        Button.waitForAnyPress();
+        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
+        robot.followDirectionList(endPath, Node.Direction.S);
 
     }
 }
