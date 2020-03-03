@@ -1,5 +1,7 @@
 package com.tbt;
 
+import java.util.ArrayList;
+
 public class RobotMap {
     public static final double NODE_LENGTH = 1.25;
 
@@ -34,7 +36,17 @@ public class RobotMap {
             }
         }
 
+    }
 
+    public void addObstacle(ArrayList<Node> obstacleNodes){
+        for(Node obstacle : obstacleNodes){
+            for(Node neighbour : obstacle.neighbours){
+                neighbour.neighbours.remove(obstacle); //Removes the obstacle nodes as possible neighbour around the obstacles
+            }
+        }
+    }
+
+    public void addRectangleObstacle(int x1, int y1, int x2, int y2){
 
     }
 }

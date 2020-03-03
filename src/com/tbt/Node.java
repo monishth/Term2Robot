@@ -47,5 +47,8 @@ public class Node implements Comparable<Node>{
         return (this.f < other.f) ? -1 : (this.f > other.f) ? 1:0;
     }
 
-
+    @Override
+    public String toString() {
+        return x + "," + y;
+    }
 }

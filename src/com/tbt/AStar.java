@@ -2,6 +2,7 @@ package com.tbt;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class AStar {
@@ -11,28 +12,31 @@ public class AStar {
         PriorityQueue<Node> openList = new PriorityQueue<>();
         ArrayList<Node> closedList = new ArrayList<>();
 
-        closedList.add(start);
+        openList.add(start);
         Node searchNode = null;
-        while(!openList.isEmpty() && closedList.contains(goal)){
+        while(!openList.isEmpty() && !closedList.contains(goal)){
             searchNode = openList.poll();
-
             for(Node neighbour : searchNode.neighbours){
-                if(openList.contains(neighbour)){
-                    double g = searchNode.g +1;
-                    double h = heuristic(neighbour, goal);
-                    double f = g+h;
-                    if(f < neighbour.f){
-                        neighbour.f = f;
-                        neighbour.g = g;
-                        neighbour.h = h;
+                if (!closedList.contains(neighbour)) {
+                    if(openList.contains(neighbour)){
+                        double g = searchNode.g +1;
+                        double h = heuristic(neighbour, goal);
+                        double f = g+h;
+                        if(f < neighbour.f){
+                            neighbour.f = f;
+                            neighbour.g = g;
+                            neighbour.h = h;
+                            neighbour.parent = searchNode;
+                        }
+                    }else{
+                        neighbour.g = searchNode.g +1;
+                        neighbour.h = heuristic(neighbour, goal);
+                        neighbour.f = neighbour.h + neighbour.g;
                         neighbour.parent = searchNode;
                     }
-                }else{
-                    neighbour.g = searchNode.g +1;
-                    neighbour.h = heuristic(neighbour, goal);
-                    neighbour.f = neighbour.h + neighbour.g;
-                    neighbour.parent = searchNode;
+                    openList.add(neighbour);
                 }
+
             }
             openList.remove(searchNode);
             closedList.add(searchNode);
@@ -50,7 +54,7 @@ public class AStar {
         ArrayList<Node> backwardsPath = new ArrayList<>();
         Node currentNode = lastNode;
         while(currentNode.parent != null){
-            backwardsPath.add(lastNode);
+            backwardsPath.add(currentNode);
             currentNode = currentNode.parent;
         }
         backwardsPath.add(currentNode);
@@ -65,11 +69,10 @@ public class AStar {
             Node endNode = nodePath.get(i+1);
             int x = endNode.x-startNode.x;
             int y = endNode.y-startNode.y;
-            if(x == 0){
-                if (y > 0) {
-                    directions.add(Node.Direction.N);
-                } else {
-                    directions.add(Node.Direction.S);
+            for(Map.Entry<Node.Direction, int[]> direction : Node.directionVectors.entrySet()){
+                if(direction.getValue()[0] == x && direction.getValue()[1] == y){
+                    directions.add(direction.getKey());
+                    break;
                 }
             }
 
@@ -79,5 +82,17 @@ public class AStar {
 
     public static double heuristic(Node node, Node goal){
         return Math.abs(node.x - goal.x) + Math.abs(node.y - goal.y); //manhattan
+    }
+    //astar test
+    public static void main(String[] args) {
+        RobotMap robotMap = new RobotMap(7);
+        Node endNode = AStarSearch(robotMap.grid[0][0], robotMap.grid[2][4]);
+
+        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
+        System.out.println("Start node: 0,0");
+        for (Node.Direction dir : endPath){
+            System.out.println(dir);
+        }
+        System.out.println("End Node: 2,4");
     }
 }

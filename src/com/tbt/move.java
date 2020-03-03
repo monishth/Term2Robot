@@ -1,6 +1,6 @@
 package com.tbt;
 
-public class dirMove(String direction){
+/*public class dirMove(String direction){
     nodeAngle = 2 * 360 / 17.28
     gyroSensor.fetchSample(gyroSensor, 0);
     switch(direction){
@@ -33,4 +33,4 @@ public class dirMove(String direction){
 
 
 
-}
+}*/
