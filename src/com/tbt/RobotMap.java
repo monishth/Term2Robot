@@ -38,6 +38,10 @@ public class RobotMap {
 
     }
 
+    public RobotMap(double lengthBoard, double cmPerNode){
+        this((int) Math.round(lengthBoard/cmPerNode));
+    }
+
     public void addObstacle(ArrayList<Node> obstacleNodes){
         for(Node obstacle : obstacleNodes){
             for(Node neighbour : obstacle.neighbours){

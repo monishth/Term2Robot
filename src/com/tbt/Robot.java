@@ -10,7 +10,11 @@ import lejos.hardware.sensor.SensorMode;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
-public class LocalisationRobot {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Robot {
     private final SensorMode colourSensor;
     private final float[] colourSample;
     private EV3LargeRegulatedMotor motorRight;
@@ -27,7 +31,7 @@ public class LocalisationRobot {
     private final double sensorRight = 0.9;
     private double moveSuccess = 0.975;
 
-    public LocalisationRobot(){
+    public Robot(){
         //Setup Motors
         motorRight = new EV3LargeRegulatedMotor(MotorPort.A);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -81,10 +85,10 @@ public class LocalisationRobot {
             motorRight.rotate((int) angle, true);
             motorLeft.rotate((int) angle);
             bayesFilter(isBlue);
-            System.out.println(getLocation()+", " + (Math.round(getHighestProbability()*100)) + ", " + colourSample[0]);
+            System.out.println(getPrediction()+", " + (Math.round(getHighestProbability()*100)) + ", " + colourSample[0]);
         }
 
-        System.out.println(getLocation());
+        System.out.println(getPrediction());
 
     }
 
@@ -118,7 +122,7 @@ public class LocalisationRobot {
 
     }
 
-    public int getLocation(){
+    public int getPrediction(){
         double max = bayesianProbabilties[0];
         int index = 0;
 
@@ -133,12 +137,42 @@ public class LocalisationRobot {
     }
 
     public double getHighestProbability(){
-        return bayesianProbabilties[getLocation()];
+        return bayesianProbabilties[getPrediction()];
+    }
+
+    public void followDirectionList(List<Node.Direction> directions, Node.Direction startingDirection){
+        Node.Direction currentDirection = startingDirection;
+        List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
+        for(Node.Direction nextMovement : directions){
+            if(currentDirection==nextMovement){
+                moveForward(NODE_SIZE);
+            }else{
+                int currentIndex = directionsAsList.indexOf(currentDirection);
+                int requiredDirectionIndex = directionsAsList.indexOf(nextMovement);
+                if(currentIndex < requiredDirectionIndex){
+                    if(requiredDirectionIndex-currentIndex < (currentIndex+(8-requiredDirectionIndex))){
+                        rotate45(requiredDirectionIndex-currentIndex);
+                    }else{
+                        rotate45(-(currentIndex+(8-requiredDirectionIndex)));
+                    }
+                }else{
+                    if(currentIndex-requiredDirectionIndex < (requiredDirectionIndex+(8-currentIndex))){
+                        rotate45(requiredDirectionIndex-currentIndex);
+                    }else{
+                        rotate45((requiredDirectionIndex+(8-currentIndex)));
+                    }
+                }
+                moveForward(NODE_SIZE);
+            }
+            currentDirection=nextMovement;
+        }
     }
 
     public static void main(String[] args) {
-        LocalisationRobot robot = new LocalisationRobot();
+        Robot robot = new Robot();
         robot.localise();
         Button.waitForAnyPress();
+        RobotMap map = new RobotMap(125, 4);
+
     }
 }
