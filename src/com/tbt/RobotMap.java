@@ -3,7 +3,7 @@ package com.tbt;
 import java.util.ArrayList;
 
 public class RobotMap {
-    public static final double NODE_LENGTH = 2;
+    public static final double NODE_LENGTH = 2.5;
     public static final double BOARD_LENTH = 125;
 
     public Node[][] grid;
@@ -82,6 +82,10 @@ public class RobotMap {
         addObstacle(obstacleNodes);
     }
 
+    public void addRectangleObstacle(double x1cm, double y1cm, double x2cm, double y2cm){
+        addRectangleObstacle(cmToNodeCoordinate(x1cm), cmToNodeCoordinate(y1cm), cmToNodeCoordinate(x2cm), cmToNodeCoordinate(y2cm));
+    }
+
     public void addDiagonalLineObstacle(int x1, int y1, int x2, int y2){
         ArrayList<Node> obstacleNodes = new ArrayList<>();
 
@@ -91,6 +95,13 @@ public class RobotMap {
             }
         }
     addObstacle(obstacleNodes);
+    }
+    public void addDiagonalLineObstacle(double x1cm, double y1cm, double x2cm, double y2cm){
+        addDiagonalLineObstacle(cmToNodeCoordinate(x1cm), cmToNodeCoordinate(y1cm), cmToNodeCoordinate(x2cm), cmToNodeCoordinate(y2cm));
+    }
+
+    public int cmToNodeCoordinate(double cm){
+        return (int) Math.round(cm/NODE_LENGTH);
     }
 
 

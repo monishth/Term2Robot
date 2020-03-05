@@ -67,35 +67,43 @@ public class Robot {
                         rotate45((requiredDirectionIndex+(8-currentIndex)));
                     }
                 }
-                moveForward(NODE_LENGTH);
+                currentDirection=nextMovement;
+                if (directionsAsList.indexOf(currentDirection) % 2 == 0) {
+                    moveForward(NODE_LENGTH);
+                }else{
+                    moveForward(NODE_LENGTH*1.4142136);
+                }
             }
-            currentDirection=nextMovement;
+
         }
     }
 
     private void rotate45(int n) {
-        int goalAngle = n*45;
-        float kp =  0.8f;
-        gyroSensor.reset();
         SampleProvider gyroSampleProvider = gyroSensor.getAngleMode();
         gyroSampleProvider.fetchSample(angleSample, 0);
-        System.out.println(angleSample[0]);
-        float error = goalAngle - angleSample[0];
-        while(Math.abs(error) < 0.5){
-            System.out.println(angleSample[0]);
-            gyroSampleProvider.fetchSample(angleSample, 0);
-            error = goalAngle - angleSample[0];
+        float goalAngle = n*45+angleSample[0];
+        float kp =  0.8f;
+        System.out.println("Error before reset: " + angleSample[0]);
+        //gyroSensor.reset();
 
-            motorLeft.setSpeed(150 + Math.abs(error*kp));
-            motorRight.setSpeed(150 + Math.abs(error*kp));
+        System.out.println("Error after reset: " + angleSample[0]);
+        float error = goalAngle - angleSample[0];
+        System.out.println("Error: " + error);
+        while(Math.abs(error) > 0.5){
+
+            motorLeft.setSpeed(40 + Math.abs(error*kp));
+            motorRight.setSpeed(40 + Math.abs(error*kp));
 
             if(error < 0){
-                motorRight.forward();
-                motorLeft.backward();
-            }else{
-                motorLeft.forward();
                 motorRight.backward();
+                motorLeft.forward();
+            }else{
+                motorLeft.backward();
+                motorRight.forward();
             }
+            gyroSampleProvider.fetchSample(angleSample, 0);
+            error = goalAngle - angleSample[0];
+            System.out.println("Angle: " + angleSample[0]+ " Error: " + error);
         }
         motorRight.stop(true);
         motorLeft.stop();
@@ -109,12 +117,13 @@ public class Robot {
 
     public static void main(String[] args) {
         Robot robot = new Robot();
-        robot.rotate45(2);
+        System.out.println("Turn Right 90 Degrees");
+        /*robot.rotate45(2);
         Button.waitForAnyPress();
-        robot.rotate45(-4);
+        robot.rotate45(-4);*/
         //int bayesionStripLocation = BayesianLocalisation.localise(robot);
-        RobotMap map = new RobotMap(125, 4);
-        map.addRectangleObstacle(1,0,4,5);
+        RobotMap map = new RobotMap(125, NODE_LENGTH);
+        //map.addRectangleObstacle(1,0,4,5);
         Node endNode = AStarSearch(map.grid[0][0], map.grid[15][4]);
         Button.waitForAnyPress();
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
