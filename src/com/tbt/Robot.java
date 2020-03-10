@@ -122,11 +122,11 @@ public class Robot {
 
     public static void main(String[] args) {
         Robot robot = new Robot();
-        int startPointNode = (int) Math.round(BayesianLocalisation.localise(robot)*1.75/(RobotMap.NODE_LENGTH*1.4142136));
+        int startPointNode = (int) Math.round((BayesianLocalisation.localise(robot)-1)*1.75/(RobotMap.NODE_LENGTH*1.4142136));
         RobotMap map = new RobotMap(125, RobotMap.NODE_LENGTH);
-        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeCoordinate(30)][RobotMap.cmToNodeCoordinate(32)], map.grid[RobotMap.cmToNodeCoordinate(68)][RobotMap.cmToNodeCoordinate(125-35)]);
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeCoordinate(30)][RobotMap.cmToNodeCoordinate(32)], map.grid[RobotMap.cmToNodeCoordinate(125-55)][RobotMap.cmToNodeCoordinate(125-5)]);
         //map.addRectangleObstacle(1,0,4,5);
-        map.addRectangleObstacle(41.7, 81.3, 125, 125);
+        map.addDiagonalLineObstacle(41.7, 81.3, 125, 125);
         Button.waitForAnyPress();
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         robot.followDirectionList(endPath);
