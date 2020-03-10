@@ -20,8 +20,11 @@ public class Robot {
     public EV3LargeRegulatedMotor motorRight;
     public EV3LargeRegulatedMotor motorLeft;
     private EV3GyroSensor gyroSensor;
+    private EV3TouchSensor touchSensor;
     private float[] angleSample;
     private double[] bayesianProbabilties;
+    private float[] colourSample;
+    private float[] touchSample;
 
 
     private RobotMap map;
@@ -32,8 +35,11 @@ public class Robot {
         motorRight = new EV3LargeRegulatedMotor(MotorPort.A);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
         gyroSensor = new EV3GyroSensor(SensorPort.S1);
+        touchSensor = new EV3TouchSensor(SensorPort.S3).getTouchMode(); //TODO check the sensor port, check all these parts initialise etc, do I need to initalise here?
         colourSensor = new EV3ColorSensor(SensorPort.S2).getRedMode();
         angleSample =new float[gyroSensor.sampleSize()];
+        colourSample = new float[colorSensor.sampleSize()];
+        touchSample = new float[touchSample.sampleSize()];
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         currentDirection = Node.Direction.NE;
@@ -109,6 +115,23 @@ public class Robot {
             gyroSampleProvider.fetchSample(angleSample, 0);
             error = goalAngle - angleSample[0];
             System.out.println("Angle: " + angleSample[0]+ " Error: " + error);
+        }
+        motorRight.stop(true);
+        motorLeft.stop();
+    }
+
+    public void enterBox(){ 
+        rotateTo(Direction.E);
+        motorLeft.setSpeed(10);
+        motorRight.setSpeed(10);
+        motorRight.forward();
+        motorLeft.forward();
+        colourSensor.setCurrentMode("ColorID");
+        colourSensor.fetchSample(colourSample, 0);
+        touchSensor.fetchSample(touchSample, 0);
+        while(colourSample[0] != 0 || colourSample[0] != 1 || touchSample[0] != 1){ //whatever the measured value for green is TODO
+            colourSensor.fetchSample(colourSample, 0);
+            touchSensor.fetchSample(touchSample, 0);
         }
         motorRight.stop(true);
         motorLeft.stop();
