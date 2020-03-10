@@ -16,10 +16,12 @@ public class AStar {
         Node searchNode = null;
         while(!openList.isEmpty() && !closedList.contains(goal)){
             searchNode = openList.poll();
+            openList.remove(searchNode);
+            closedList.add(searchNode);
             for(Node neighbour : searchNode.neighbours){
                 if (!closedList.contains(neighbour)) {
                     if(openList.contains(neighbour)){
-                        double g = searchNode.g +1;
+                        double g = searchNode.g + (neighbour.x-searchNode.x == 0 || neighbour.y-searchNode.y==0 ? 1 : 1.4142136);
                         double h = heuristic(neighbour, goal);
                         double f = g+h;
                         if(f < neighbour.f){
@@ -29,7 +31,7 @@ public class AStar {
                             neighbour.parent = searchNode;
                         }
                     }else{
-                        neighbour.g = searchNode.g +1;
+                        neighbour.g = searchNode.g + (neighbour.x-searchNode.x == 0 || neighbour.y-searchNode.y==0 ? 1 : 1.4142136);
                         neighbour.h = heuristic(neighbour, goal);
                         neighbour.f = neighbour.h + neighbour.g;
                         neighbour.parent = searchNode;
@@ -38,8 +40,6 @@ public class AStar {
                 }
 
             }
-            openList.remove(searchNode);
-            closedList.add(searchNode);
         }
 
         if(closedList.contains(goal)){
@@ -85,10 +85,10 @@ public class AStar {
     }
     //astar test
     public static void main(String[] args) {
-        RobotMap robotMap = new RobotMap(20);
-        robotMap.addRectangleObstacle(1,0,4,5);
-        Node endNode = AStarSearch(robotMap.grid[0][0], robotMap.grid[15][4]);
-
+        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        map.addDiagonalLineObstacle(41.7, 81.3, 120, 0);
+        map.printBoard();
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         System.out.println("Start node: 0,0");
         for (Node.Direction dir : endPath){

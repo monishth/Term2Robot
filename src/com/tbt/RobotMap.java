@@ -44,10 +44,12 @@ public class RobotMap {
     }
 
     public void addObstacle(ArrayList<Node> obstacleNodes){
+
         for(Node obstacle : obstacleNodes){
             for(Node neighbour : obstacle.neighbours){
                 neighbour.neighbours.remove(obstacle); //Removes the obstacle nodes as possible neighbour around the obstacles
             }
+            obstacle.neighbours.clear();
         }
     }
 
@@ -88,14 +90,14 @@ public class RobotMap {
 
     public void addDiagonalLineObstacle(int x1, int y1, int x2, int y2){
         ArrayList<Node> obstacleNodes = new ArrayList<>();
-
-        for(int i = x1; i<=x2; i++){
-            for(int j = y1;j<=y2;i--){
-                obstacleNodes.add(grid[i][j]);
-                obstacleNodes.add(grid[i+1][j]);
-            }
+        System.out.println("coordinates of obstacle: " + x1 + "," + y1 + "x" + x2 + "," + y2);
+        for(int i = x1; i <=x2; i++){
+                obstacleNodes.add(grid[i][y1]);
+                obstacleNodes.add(grid[i+1][y1]);
+                y1--;
         }
-    addObstacle(obstacleNodes);
+        System.out.println(obstacleNodes.size());
+        addObstacle(obstacleNodes);
     }
     public void addDiagonalLineObstacle(double x1cm, double y1cm, double x2cm, double y2cm){
         addDiagonalLineObstacle(cmToNodeValue(x1cm), cmToNodeValue(y1cm), cmToNodeValue(x2cm), cmToNodeValue(y2cm));
@@ -119,6 +121,16 @@ public class RobotMap {
 
     public static int cmToNodeValue(double cm){
         return (int) Math.round(cm/NODE_LENGTH);
+    }
+
+    public void printBoard(){
+        System.out.println();
+        for(int i = 0; i < grid.length; i++){
+            for(int j = grid.length-1; j >= 0; j--){
+                System.out.print((grid[i][j].neighbours.isEmpty()) ? "X" : "O");
+            }
+            System.out.println();
+        }
     }
 
 
