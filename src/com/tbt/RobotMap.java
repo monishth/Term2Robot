@@ -83,7 +83,7 @@ public class RobotMap {
     }
 
     public void addRectangleObstacle(double x1cm, double y1cm, double x2cm, double y2cm){
-        addRectangleObstacle(cmToNodeCoordinate(x1cm), cmToNodeCoordinate(y1cm), cmToNodeCoordinate(x2cm), cmToNodeCoordinate(y2cm));
+        addRectangleObstacle(cmToNodeValue(x1cm), cmToNodeValue(y1cm), cmToNodeValue(x2cm), cmToNodeValue(y2cm));
     }
 
     public void addDiagonalLineObstacle(int x1, int y1, int x2, int y2){
@@ -98,10 +98,26 @@ public class RobotMap {
     addObstacle(obstacleNodes);
     }
     public void addDiagonalLineObstacle(double x1cm, double y1cm, double x2cm, double y2cm){
-        addDiagonalLineObstacle(cmToNodeCoordinate(x1cm), cmToNodeCoordinate(y1cm), cmToNodeCoordinate(x2cm), cmToNodeCoordinate(y2cm));
+        addDiagonalLineObstacle(cmToNodeValue(x1cm), cmToNodeValue(y1cm), cmToNodeValue(x2cm), cmToNodeValue(y2cm));
     }
 
-    public static int cmToNodeCoordinate(double cm){
+    public void addCylinderObstacle(int x, int y, int nodeRadius){
+        ArrayList<Node> obstacleNodes = new ArrayList<>();
+        obstacleNodes.add(grid[x][y]);
+        for(int i = 1; i < nodeRadius; i++){
+            for(Node node : obstacleNodes){
+                for(Node neighbour : node.neighbours){
+                    if(!obstacleNodes.contains(neighbour)) obstacleNodes.add(neighbour);
+                }
+            }
+        }
+    }
+
+    public void addCylinderObstacle(double xcm, double ycm, double cmRadius){
+        addCylinderObstacle(cmToNodeValue(xcm), cmToNodeValue(ycm), cmToNodeValue(cmRadius));
+    }
+
+    public static int cmToNodeValue(double cm){
         return (int) Math.round(cm/NODE_LENGTH);
     }
 
