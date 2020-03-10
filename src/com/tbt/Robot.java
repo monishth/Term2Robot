@@ -41,14 +41,11 @@ public class Robot {
     }
 
 
-    public void createPathingMap(){
-        map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        map.addRectangleObstacle(0,0,1,1);
-    }
 
     public void followDirectionList(List<Node.Direction> directions){
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
+            System.out.println(nextMovement);
             if(currentDirection ==nextMovement){
                 moveForward(RobotMap.NODE_LENGTH);
             }else{
@@ -65,6 +62,7 @@ public class Robot {
 
     private void rotateTo(Node.Direction directionToFace) {
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
+        System.out.print(currentDirection + "->" + directionToFace + ": ");
         int currentIndex = directionsAsList.indexOf(currentDirection);
         int requiredDirectionIndex = directionsAsList.indexOf(directionToFace);
         if(currentIndex < requiredDirectionIndex){
@@ -86,14 +84,16 @@ public class Robot {
     private void rotate45(int n) {
         SampleProvider gyroSampleProvider = gyroSensor.getAngleMode();
         gyroSampleProvider.fetchSample(angleSample, 0);
-        float goalAngle = n*45+angleSample[0];
+        System.out.println(n);
+
+        float goalAngle = -1*(n*45)+angleSample[0];
         float kp =  0.8f;
-        System.out.println("Error before reset: " + angleSample[0]);
+        //System.out.println("Error before reset: " + angleSample[0]);
         //gyroSensor.reset();
 
-        System.out.println("Error after reset: " + angleSample[0]);
+        //System.out.println("Error after reset: " + angleSample[0]);
         float error = goalAngle - angleSample[0];
-        System.out.println("Error: " + error);
+       // System.out.println("Error: " + error);
         while(Math.abs(error) > 0.5){
 
             motorLeft.setSpeed(40 + Math.abs(error*kp));
@@ -108,7 +108,7 @@ public class Robot {
             }
             gyroSampleProvider.fetchSample(angleSample, 0);
             error = goalAngle - angleSample[0];
-            System.out.println("Angle: " + angleSample[0]+ " Error: " + error);
+            //System.out.println("Angle: " + angleSample[0]+ " Error: " + error);
         }
         motorRight.stop(true);
         motorLeft.stop();
@@ -116,19 +116,21 @@ public class Robot {
 
     public void moveForward(double distance) {
         int angleToRotate = (int) (distance * 360/17.28);
+        motorLeft.setSpeed(90);
+        motorRight.setSpeed(90);
         motorRight.rotate(angleToRotate, true);
         motorLeft.rotate(angleToRotate);
     }
 
     public static void main(String[] args) {
         Robot robot = new Robot();
-        int startPointNode = (int) Math.round((BayesianLocalisation.localise(robot)-1)*1.75/(RobotMap.NODE_LENGTH*1.4142136));
-        RobotMap map = new RobotMap(125, RobotMap.NODE_LENGTH);
+
+        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        map.addDiagonalLineObstacle(38.0, 85.0, 120.0, 0.0);
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
-        //map.addRectangleObstacle(1,0,4,5);
-        map.addDiagonalLineObstacle(41.7, 81.3, 125, 125);
-        Button.waitForAnyPress();
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
+        System.out.println(Arrays.toString(endPath.toArray()));
+        Button.waitForAnyPress();
         robot.followDirectionList(endPath);
 
     }

@@ -1,7 +1,5 @@
 package com.tbt;
 
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.sensor.SensorMode;
 import lejos.utility.Delay;
 
 public class BayesianLocalisation {
@@ -14,7 +12,7 @@ public class BayesianLocalisation {
     public static final double sensorRight = 0.9;
     public static final double moveSuccess = 0.975;
 
-    public static int localise(Robot robot){
+    public static int findLocation(Robot robot){
         double[] bayesianProbabilties = new double[blueMap.length];;
         float[] colourSample = new float[robot.colourSensor.sampleSize()];
         double angle = 1.75 * 360 / 17.28;
@@ -55,50 +53,50 @@ public class BayesianLocalisation {
             robot.motorRight.rotate((int) angle, true);
             robot.motorLeft.rotate((int) angle);
             bayesFilter(isBlue, bayesianProbabilties);
-            System.out.println(getPrediction(bayesianProbabilties)+", " + (Math.round(getHighestProbability(bayesianProbabilties)*100)) + ", " + colourSample[0]);
+            System.out.println(getPredictedLocation(bayesianProbabilties)+", " + (Math.round(getHighestProbability(bayesianProbabilties)*100)) + ", " + colourSample[0]);
         }
 
-        System.out.println(getPrediction(bayesianProbabilties));
-        return getPrediction(bayesianProbabilties);
+        System.out.println(getPredictedLocation(bayesianProbabilties));
+        return getPredictedLocation(bayesianProbabilties);
     }
 
-    public static void bayesFilter(boolean isBlue, double[] bayesianProbabilties){
+    public static void bayesFilter(boolean blue, double[] bayesianProbabilities){
         //update based on sensor value
         double coefficient = 0;
-        for(int i = 0; i <bayesianProbabilties.length; i++){
-            if(blueMap[i] == isBlue){
-                bayesianProbabilties[i] *= sensorRight;
+        for(int i = 0; i <bayesianProbabilities.length; i++){
+            if(blueMap[i] == blue){
+                bayesianProbabilities[i] *= sensorRight;
             }else{
-                bayesianProbabilties[i] *= 1-sensorRight;
+                bayesianProbabilities[i] *= 1-sensorRight;
             }
 
-            coefficient += bayesianProbabilties[i];
+            coefficient += bayesianProbabilities[i];
         }
 
-        for(int i = 0; i < bayesianProbabilties.length; i++){
-            bayesianProbabilties[i] /= coefficient;
+        for(int i = 0; i < bayesianProbabilities.length; i++){
+            bayesianProbabilities[i] /= coefficient;
         }
 
         coefficient = 0;
 
-        for(int i = bayesianProbabilties.length-1;i > 0 ; i--){
-            bayesianProbabilties[i] = bayesianProbabilties[i-1] * moveSuccess + bayesianProbabilties[i]*(1-moveSuccess);
-            coefficient += bayesianProbabilties[i];
+        for(int i = bayesianProbabilities.length-1;i > 0 ; i--){
+            bayesianProbabilities[i] = bayesianProbabilities[i-1] * moveSuccess + bayesianProbabilities[i]*(1-moveSuccess);
+            coefficient += bayesianProbabilities[i];
         }
 
-        for(int i = 0; i < bayesianProbabilties.length; i++){
-            bayesianProbabilties[i] /= coefficient;
+        for(int i = 0; i < bayesianProbabilities.length; i++){
+            bayesianProbabilities[i] /= coefficient;
         }
 
     }
 
-    public static int getPrediction(double[] bayesianProbabilties){
-        double max = bayesianProbabilties[0];
+    public static int getPredictedLocation(double[] bayesianProbabilities){
+        double max = bayesianProbabilities[0];
         int index = 0;
 
-        for(int i = 1; i < bayesianProbabilties.length; ++i) {
-            if(bayesianProbabilties[i] > max) {
-                max = bayesianProbabilties[i];
+        for(int i = 1; i < bayesianProbabilities.length; ++i) {
+            if(bayesianProbabilities[i] > max) {
+                max = bayesianProbabilities[i];
                 index = i;
             }
         }
@@ -106,8 +104,8 @@ public class BayesianLocalisation {
         return index;
     }
 
-    public static double getHighestProbability(double[] bayesianProbabilties){
-        return bayesianProbabilties[getPrediction(bayesianProbabilties)];
+    public static double getHighestProbability(double[] bayesianProbabilities){
+        return bayesianProbabilities[getPredictedLocation(bayesianProbabilities)];
     }
 
 
