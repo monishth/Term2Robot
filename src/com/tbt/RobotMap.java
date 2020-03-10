@@ -101,7 +101,7 @@ public class RobotMap {
         addDiagonalLineObstacle(cmToNodeCoordinate(x1cm), cmToNodeCoordinate(y1cm), cmToNodeCoordinate(x2cm), cmToNodeCoordinate(y2cm));
     }
 
-    public int cmToNodeCoordinate(double cm){
+    public static int cmToNodeCoordinate(double cm){
         return (int) Math.round(cm/NODE_LENGTH);
     }
 

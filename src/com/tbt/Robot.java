@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.tbt.AStar.*;
-import static com.tbt.RobotMap.NODE_LENGTH;
 
 public class Robot {
     public SensorMode colourSensor;
@@ -26,6 +25,7 @@ public class Robot {
 
 
     private RobotMap map;
+    private Node.Direction currentDirection;
 
     public Robot(){
         //Setup Motors
@@ -36,46 +36,51 @@ public class Robot {
         angleSample =new float[gyroSensor.sampleSize()];
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
+        currentDirection = Node.Direction.NE;
 
     }
 
 
     public void createPathingMap(){
-        map = new RobotMap(RobotMap.BOARD_LENTH, NODE_LENGTH);
+        map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addRectangleObstacle(0,0,1,1);
     }
 
-    public void followDirectionList(List<Node.Direction> directions, Node.Direction startingDirection){
-        Node.Direction currentDirection = startingDirection;
+    public void followDirectionList(List<Node.Direction> directions){
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
-            if(currentDirection==nextMovement){
-                moveForward(NODE_LENGTH);
+            if(currentDirection ==nextMovement){
+                moveForward(RobotMap.NODE_LENGTH);
             }else{
-                int currentIndex = directionsAsList.indexOf(currentDirection);
-                int requiredDirectionIndex = directionsAsList.indexOf(nextMovement);
-                if(currentIndex < requiredDirectionIndex){
-                    if(requiredDirectionIndex-currentIndex < (currentIndex+(8-requiredDirectionIndex))){
-                        rotate45(requiredDirectionIndex-currentIndex);
-                    }else{
-                        rotate45(-(currentIndex+(8-requiredDirectionIndex)));
-                    }
-                }else{
-                    if(currentIndex-requiredDirectionIndex < (requiredDirectionIndex+(8-currentIndex))){
-                        rotate45(requiredDirectionIndex-currentIndex);
-                    }else{
-                        rotate45((requiredDirectionIndex+(8-currentIndex)));
-                    }
-                }
-                currentDirection=nextMovement;
+                rotateTo(nextMovement);
                 if (directionsAsList.indexOf(currentDirection) % 2 == 0) {
-                    moveForward(NODE_LENGTH);
+                    moveForward(RobotMap.NODE_LENGTH);
                 }else{
-                    moveForward(NODE_LENGTH*1.4142136);
+                    moveForward(RobotMap.NODE_LENGTH*1.4142136);
                 }
             }
 
         }
+    }
+
+    private void rotateTo(Node.Direction directionToFace) {
+        List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
+        int currentIndex = directionsAsList.indexOf(currentDirection);
+        int requiredDirectionIndex = directionsAsList.indexOf(directionToFace);
+        if(currentIndex < requiredDirectionIndex){
+            if(requiredDirectionIndex-currentIndex < (currentIndex+(8-requiredDirectionIndex))){
+                rotate45(requiredDirectionIndex-currentIndex);
+            }else{
+                rotate45(-(currentIndex+(8-requiredDirectionIndex)));
+            }
+        }else{
+            if(currentIndex-requiredDirectionIndex < (requiredDirectionIndex+(8-currentIndex))){
+                rotate45(requiredDirectionIndex-currentIndex);
+            }else{
+                rotate45((requiredDirectionIndex+(8-currentIndex)));
+            }
+        }
+        currentDirection = directionToFace;
     }
 
     private void rotate45(int n) {
@@ -117,17 +122,14 @@ public class Robot {
 
     public static void main(String[] args) {
         Robot robot = new Robot();
-        System.out.println("Turn Right 90 Degrees");
-        /*robot.rotate45(2);
-        Button.waitForAnyPress();
-        robot.rotate45(-4);*/
-        //int bayesionStripLocation = BayesianLocalisation.localise(robot);
-        RobotMap map = new RobotMap(125, NODE_LENGTH);
+        int startPointNode = (int) Math.round(BayesianLocalisation.localise(robot)*1.75/(RobotMap.NODE_LENGTH*1.4142136));
+        RobotMap map = new RobotMap(125, RobotMap.NODE_LENGTH);
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeCoordinate(30)][RobotMap.cmToNodeCoordinate(32)], map.grid[RobotMap.cmToNodeCoordinate(68)][RobotMap.cmToNodeCoordinate(125-35)]);
         //map.addRectangleObstacle(1,0,4,5);
-        Node endNode = AStarSearch(map.grid[0][0], map.grid[15][4]);
+        map.addRectangleObstacle(41.7, 81.3, 125, 125);
         Button.waitForAnyPress();
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
-        robot.followDirectionList(endPath, Node.Direction.S);
+        robot.followDirectionList(endPath);
 
     }
 }
