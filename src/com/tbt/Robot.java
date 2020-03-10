@@ -122,14 +122,14 @@ public class Robot {
 
     public void enterBox(){ 
         rotateTo(Direction.E);
-        motorLeft.setSpeed(10);
-        motorRight.setSpeed(10);
+        motorLeft.setSpeed(20);
+        motorRight.setSpeed(20);
         motorRight.forward();
         motorLeft.forward();
         colourSensor.setCurrentMode("ColorID");
         colourSensor.fetchSample(colourSample, 0);
         touchSensor.fetchSample(touchSample, 0);
-        while(colourSample[0] != 0 || colourSample[0] != 1 || touchSample[0] != 1){ //whatever the measured value for green is TODO
+        while(colourSample[0] != 0 || colourSample[0] != 2 || touchSample[0] != 1){ //whatever the measured value for green is TODO
             colourSensor.fetchSample(colourSample, 0);
             touchSensor.fetchSample(touchSample, 0);
         }
