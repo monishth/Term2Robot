@@ -1,6 +1,7 @@
 package com.tbt;
 
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -119,7 +120,7 @@ public class Robot {
         motorLeft.stop();
     }
 
-    public void enterBox(){ 
+    public int enterBox(){
         rotateTo(Node.Direction.E);
         motorLeft.setSpeed(20);
         motorRight.setSpeed(20);
@@ -128,12 +129,21 @@ public class Robot {
         colourSensor.setCurrentMode("ColorID");
         colourSensor.fetchSample(colourSample, 0);
         touchSensor.fetchSample(touchSample, 0);
-        while(colourSample[0] != 0 || colourSample[0] != 2 || touchSample[0] != 1){ //whatever the measured value for green is TODO
-            colourSensor.fetchSample(colourSample, 0);
+        while((colourSample[0] != 0.0 && colourSample[0] != 2.0) || touchSample[0] != 1){ //whatever the measured value for green is TODO
             touchSensor.fetchSample(touchSample, 0);
         }
         motorRight.stop(true);
         motorLeft.stop();
+        colourSensor.fetchSample(colourSample, 0);
+        Sound.twoBeeps();
+
+        if(colourSample[0] == 0.0){
+            return 0;
+        }else if(colourSample[0] == 2.0){
+            return 1;
+        }else{
+            return -1;
+        }
     }
 
     public void moveForward(double distance) {
@@ -146,14 +156,37 @@ public class Robot {
 
     public static void main(String[] args) {
         Robot robot = new Robot();
+        double startingLocation = ((BayesianLocalisation.findLocation(robot)-4)*(1.75));
+        System.out.println("Task 1 Started");
+        System.out.println("Robot Localised: (" + startingLocation + "cm, " + startingLocation + "cm)");
+        System.out.println("Task 1 Finished");
+        System.out.println("Task 2 Started");
+        ArrayList<Node.Direction> endPath = robot.planTask1(startingLocation, 0);
+        System.out.println("Path to tunnel planned avoiding obstacle 0");
+        Button.waitForAnyPress();
+        robot.followDirectionList(endPath); //Go to tunnel
+        System.out.println("Tunnel Reached");
+        System.out.println("Task 2 Finished");
+        System.out.println("Task 3 Started");
+        int colourSensed = robot.enterBox();
+        if(colourSensed == -1){
+            System.out.println("Colour Sensing Failed");
+            return;
+        }
+        Button.waitForAnyPress();
+        robot.moveForward(-10);
+        System.out.println("Task 3 Finished");
+        System.out.println("Task 4 Started");
 
+    }
+
+    private ArrayList<Node.Direction> planTask1(double startingLocation, int obstacle) {
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addDiagonalLineObstacle(38.0, 85.0, 120.0, 0.0);
+        //Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(startingLocation)][RobotMap.cmToNodeValue(startingLocation)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         System.out.println(Arrays.toString(endPath.toArray()));
-        Button.waitForAnyPress();
-        robot.followDirectionList(endPath);
-
+        return endPath;
     }
 }
