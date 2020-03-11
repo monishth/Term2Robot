@@ -153,10 +153,10 @@ public class Robot {
         motorRight.rotate(angleToRotate, true);
         motorLeft.rotate(angleToRotate);
     }
-
+//TODO still need to define the different obstacles
     private ArrayList<Node.Direction> planTask1(double startingLocation, int obstacle) {
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        map.addDiagonalLineObstacle(38.0, 85.0, 120.0, 0.0);
+        map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
         //Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(startingLocation)][RobotMap.cmToNodeValue(startingLocation)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
@@ -166,7 +166,7 @@ public class Robot {
 
     private ArrayList<Node.Direction> planTask4(int colourSensed){
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        map.addDiagonalLineObstacle(5.0, 110.0, 85.0, 38.0);
+        map.addObstacle(new DiagonalLineObstacle(map, 5.0, 110.0, 85.0, 38.0));
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(-1)][RobotMap.cmToNodeValue(-1)], map.grid[RobotMap.cmToNodeValue(1)][RobotMap.cmToNodeValue(0)]);
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         System.out.println(Arrays.toString(endPath.toArray()));
