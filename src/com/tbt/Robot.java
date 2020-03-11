@@ -154,32 +154,6 @@ public class Robot {
         motorLeft.rotate(angleToRotate);
     }
 
-    public static void main(String[] args) {
-        Robot robot = new Robot();
-        double startingLocation = ((BayesianLocalisation.findLocation(robot)-4)*(1.75));
-        System.out.println("Task 1 Started");
-        System.out.println("Robot Localised: (" + startingLocation + "cm, " + startingLocation + "cm)");
-        System.out.println("Task 1 Finished");
-        System.out.println("Task 2 Started");
-        ArrayList<Node.Direction> endPath = robot.planTask1(startingLocation, 0);
-        System.out.println("Path to tunnel planned avoiding obstacle 0");
-        Button.waitForAnyPress();
-        robot.followDirectionList(endPath); //Go to tunnel
-        System.out.println("Tunnel Reached");
-        System.out.println("Task 2 Finished");
-        System.out.println("Task 3 Started");
-        int colourSensed = robot.enterBox();
-        if(colourSensed == -1){
-            System.out.println("Colour Sensing Failed");
-            return;
-        }
-        Button.waitForAnyPress();
-        robot.moveForward(-10);
-        System.out.println("Task 3 Finished");
-        System.out.println("Task 4 Started");
-
-    }
-
     private ArrayList<Node.Direction> planTask1(double startingLocation, int obstacle) {
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addDiagonalLineObstacle(38.0, 85.0, 120.0, 0.0);
@@ -188,5 +162,47 @@ public class Robot {
         ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
         System.out.println(Arrays.toString(endPath.toArray()));
         return endPath;
+    }
+
+    private ArrayList<Node.Direction> planTask4(int colourSensed){
+        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        map.addDiagonalLineObstacle(5.0, 110.0, 85.0, 38.0);
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(-1)][RobotMap.cmToNodeValue(-1)], map.grid[RobotMap.cmToNodeValue(1)][RobotMap.cmToNodeValue(0)]);
+        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
+        System.out.println(Arrays.toString(endPath.toArray()));
+        return endPath;
+    }
+
+    public static void main(String[] args) {
+        Robot robot = new Robot();
+        double startingLocation = ((BayesianLocalisation.findLocation(robot)-4)*(1.75));
+        System.out.println("Task 1 Started");
+        System.out.println("Robot Localised: (" + startingLocation + "cm, " + startingLocation + "cm)");
+        System.out.println("Task 1 Complete");
+        System.out.println("Task 2 Started");
+        ArrayList<Node.Direction> task1Path = robot.planTask1(startingLocation, 0);
+        System.out.println("Path to tunnel planned avoiding obstacle 0");
+        System.out.println("Press to start");
+        Button.waitForAnyPress();
+        robot.followDirectionList(task1Path); //Go to tunnel
+        System.out.println("Tunnel Reached");
+        System.out.println("Task 2 Complete");
+        System.out.println("Task 3 Started");
+        int colourSensed = robot.enterBox();
+        if(colourSensed == -1){
+            System.out.println("Colour Sensing Failed");
+            return;
+        }
+        Button.waitForAnyPress();
+        robot.moveForward(-10);
+        System.out.println("Task 3 Complete");
+        System.out.println("Task 4 Started");
+        ArrayList<Node.Direction> task4Path = robot.planTask4(colourSensed);
+        System.out.println("Path to finish planned avoiding obstacle " + colourSensed);
+        System.out.println("Press to start");
+        Button.waitForAnyPress();
+        robot.followDirectionList(task4Path);
+        System.out.println("Task 4 Complete");
+
     }
 }
