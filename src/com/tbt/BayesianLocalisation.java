@@ -13,15 +13,15 @@ public class BayesianLocalisation {
     public static final double moveSuccess = 0.975;
 
     public static int findLocation(Robot robot){
-        double[] bayesianProbabilties = new double[blueMap.length];;
+        double[] bayesianProbabilities = new double[blueMap.length];;
         float[] colourSample = new float[robot.colourSensor.sampleSize()];
         double angle = 1.75 * 360 / 17.28;
 
         for (int i =0; i < 9; i++){
-            bayesianProbabilties[i] = 0;
+            bayesianProbabilities[i] = 0;
         }
-        for(int i = 9; i < bayesianProbabilties.length; i++){
-            bayesianProbabilties[i] = 1.0/blueMap.length-9;
+        for(int i = 9; i < bayesianProbabilities.length; i++){
+            bayesianProbabilities[i] = 1.0/blueMap.length-9;
         }
         robot.colourSensor.setCurrentMode("Red");
         robot.colourSensor.fetchSample(colourSample, 0);
@@ -43,7 +43,7 @@ public class BayesianLocalisation {
         robot.motorLeft.rotate((int) (-angle*5/8), true);
         robot.motorRight.rotate((int) (-angle*5/8));
 
-        while (getHighestProbability(bayesianProbabilties) < 0.85){
+        while (getHighestProbability(bayesianProbabilities) < 0.85){
             robot.colourSensor.fetchSample(colourSample, 0);
             boolean isBlue = false;
             if (colourSample[0] < 0.2){
@@ -53,12 +53,12 @@ public class BayesianLocalisation {
             Delay.msDelay(1000);
             robot.motorRight.rotate((int) angle, true);
             robot.motorLeft.rotate((int) angle);
-            bayesFilter(isBlue, bayesianProbabilties);
-            System.out.println(getPredictedLocation(bayesianProbabilties)+", " + (Math.round(getHighestProbability(bayesianProbabilties)*100)) + ", " + colourSample[0]);
+            bayesFilter(isBlue, bayesianProbabilities);
+            System.out.println(getPredictedLocation(bayesianProbabilities)+", " + (Math.round(getHighestProbability(bayesianProbabilities)*100)) + ", " + colourSample[0]);
         }
 
-        System.out.println(getPredictedLocation(bayesianProbabilties));
-        return getPredictedLocation(bayesianProbabilties);
+        System.out.println(getPredictedLocation(bayesianProbabilities));
+        return getPredictedLocation(bayesianProbabilities);
     }
 
     public static void bayesFilter(boolean blue, double[] bayesianProbabilities){

@@ -7,7 +7,6 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.SensorMode;
 import lejos.robotics.SampleProvider;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ public class Robot {
     private EV3GyroSensor gyroSensor;
     private EV3TouchSensor touchSensor;
     private float[] angleSample;
-    private double[] bayesianProbabilties;
     private float[] colourSample;
     private float[] touchSample;
 
