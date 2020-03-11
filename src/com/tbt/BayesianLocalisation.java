@@ -23,6 +23,7 @@ public class BayesianLocalisation {
         for(int i = 9; i < bayesianProbabilties.length; i++){
             bayesianProbabilties[i] = 1.0/blueMap.length-9;
         }
+        robot.colourSensor.setCurrentMode("Red");
         robot.colourSensor.fetchSample(colourSample, 0);
         float previousSample = colourSample[0];
         int counter = 0;

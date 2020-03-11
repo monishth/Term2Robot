@@ -6,6 +6,7 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.SensorMode;
 import lejos.robotics.SampleProvider;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import static com.tbt.AStar.*;
 
 public class Robot {
-    public SensorMode colourSensor;
+    public EV3ColorSensor colourSensor;
     public EV3LargeRegulatedMotor motorRight;
     public EV3LargeRegulatedMotor motorLeft;
     private EV3GyroSensor gyroSensor;
@@ -35,11 +36,11 @@ public class Robot {
         motorRight = new EV3LargeRegulatedMotor(MotorPort.A);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
         gyroSensor = new EV3GyroSensor(SensorPort.S1);
-        touchSensor = new EV3TouchSensor(SensorPort.S3).getTouchMode(); //TODO check the sensor port, check all these parts initialise etc, do I need to initalise here?
-        colourSensor = new EV3ColorSensor(SensorPort.S2).getRedMode();
+        touchSensor = new EV3TouchSensor(SensorPort.S3); //TODO check the sensor port, check all these parts initialise etc, do I need to initalise here?
+        colourSensor = new EV3ColorSensor(SensorPort.S2);
         angleSample =new float[gyroSensor.sampleSize()];
-        colourSample = new float[colorSensor.sampleSize()];
-        touchSample = new float[touchSample.sampleSize()];
+        colourSample = new float[colourSensor.sampleSize()];
+        touchSample = new float[touchSensor.sampleSize()];
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         currentDirection = Node.Direction.NE;
@@ -121,7 +122,7 @@ public class Robot {
     }
 
     public void enterBox(){ 
-        rotateTo(Direction.E);
+        rotateTo(Node.Direction.E);
         motorLeft.setSpeed(20);
         motorRight.setSpeed(20);
         motorRight.forward();
