@@ -1,9 +1,6 @@
 package com.tbt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class AStar {
 
@@ -18,6 +15,7 @@ public class AStar {
             searchNode = openList.poll();
             openList.remove(searchNode);
             closedList.add(searchNode);
+            System.out.println(searchNode);
             for(Node neighbour : searchNode.neighbours){
                 if (!closedList.contains(neighbour)) {
                     if(openList.contains(neighbour)){
@@ -29,6 +27,7 @@ public class AStar {
                             neighbour.g = g;
                             neighbour.h = h;
                             neighbour.parent = searchNode;
+                            openList.remove(neighbour);
                         }
                     }else{
                         neighbour.g = searchNode.g + (neighbour.x-searchNode.x == 0 || neighbour.y-searchNode.y==0 ? 1 : 1.4142136);
@@ -85,10 +84,15 @@ public class AStar {
     }
     //astar test
     public static void main(String[] args) {
-        RobotMap map = new RobotMap(30);
-        map.addObstacle(new LineObstacle(map, 29,0,10,20,2));
-        //map.addObstacle(new RectangleObstacle(map, 0,0,15,28));
-        map.printBoard();
+        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        System.out.println("Map created");
+        map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
+        // map.printBoard();
+        System.out.println("wall created");
+
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(52.5)][RobotMap.cmToNodeValue(2.5)], map.grid[RobotMap.cmToNodeValue(120)][RobotMap.cmToNodeValue(120)]);
+        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
+        System.out.println(Arrays.toString(endPath.toArray()));
 
         /*RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addDiagonalLineObstacle(41.7, 81.3, 120, 0);
