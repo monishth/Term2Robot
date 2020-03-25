@@ -85,7 +85,12 @@ public class AStar {
     }
     //astar test
     public static void main(String[] args) {
-        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        RobotMap map = new RobotMap(30);
+        map.addObstacle(new LineObstacle(map, 29,0,10,20,2));
+        //map.addObstacle(new RectangleObstacle(map, 0,0,15,28));
+        map.printBoard();
+
+        /*RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addDiagonalLineObstacle(41.7, 81.3, 120, 0);
         map.printBoard();
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
@@ -94,6 +99,6 @@ public class AStar {
         for (Node.Direction dir : endPath){
             System.out.println(dir);
         }
-        System.out.println("End Node: " + endNode);
+        System.out.println("End Node: " + endNode);*/
     }
 }
