@@ -46,7 +46,6 @@ public class Robot {
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         currentDirection = Node.Direction.NE;
-        //YOU FUCKING CUNT
 
     }
 
