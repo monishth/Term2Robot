@@ -12,6 +12,12 @@ public class BayesianLocalisation {
     public static final double sensorRight = 0.9;
     public static final double moveSuccess = 0.975;
 
+    /**
+     * routine to localise
+     *
+     * @param robot Robot object to find location from
+     * @return index on bayesian strip
+     */
     public static int findLocation(Robot robot){
         double[] bayesianProbabilities = new double[blueMap.length];;
         float[] colourSample = new float[robot.colourSensor.sampleSize()];
@@ -43,7 +49,7 @@ public class BayesianLocalisation {
         robot.motorLeft.rotate((int) (-angle*5/8), true);
         robot.motorRight.rotate((int) (-angle*5/8));
 
-        while (getHighestProbability(bayesianProbabilities) < 0.85){
+        while (getMaxProbability(bayesianProbabilities) < 0.85){
             robot.colourSensor.fetchSample(colourSample, 0);
             boolean isBlue = false;
             if (colourSample[0] < 0.2){
@@ -54,13 +60,19 @@ public class BayesianLocalisation {
             robot.motorRight.rotate((int) angle, true);
             robot.motorLeft.rotate((int) angle);
             bayesFilter(isBlue, bayesianProbabilities);
-            System.out.println(getPredictedLocation(bayesianProbabilities)+", " + (Math.round(getHighestProbability(bayesianProbabilities)*100)) + ", " + colourSample[0]);
+            System.out.println(getPredictedLocation(bayesianProbabilities)+", " + (Math.round(getMaxProbability(bayesianProbabilities)*100)) + ", " + colourSample[0]);
         }
 
         System.out.println(getPredictedLocation(bayesianProbabilities));
         return getPredictedLocation(bayesianProbabilities);
     }
 
+    /**
+     * calculates bayesian probabilites
+     *
+     * @param blue is the current sensed colour blue?
+     * @param bayesianProbabilities array of probabilities
+     */
     public static void bayesFilter(boolean blue, double[] bayesianProbabilities){
         //update based on sensor value
         double coefficient = 0;
@@ -77,7 +89,7 @@ public class BayesianLocalisation {
         for(int i = 0; i < bayesianProbabilities.length; i++){
             bayesianProbabilities[i] /= coefficient;
         }
-
+        //update based on move
         coefficient = 0;
 
         for(int i = bayesianProbabilities.length-1;i > 0 ; i--){
@@ -91,6 +103,12 @@ public class BayesianLocalisation {
 
     }
 
+    /**
+     * get the index with the highest probability
+     *
+     * @param bayesianProbabilities array of probabilities
+     * @return index of position on strip
+     */
     public static int getPredictedLocation(double[] bayesianProbabilities){
         double max = bayesianProbabilities[0];
         int index = 0;
@@ -105,7 +123,11 @@ public class BayesianLocalisation {
         return index;
     }
 
-    public static double getHighestProbability(double[] bayesianProbabilities){
+    /**
+     * @param bayesianProbabilities array of probabilities
+     * @return max probability in the array
+     */
+    public static double getMaxProbability(double[] bayesianProbabilities){
         return bayesianProbabilities[getPredictedLocation(bayesianProbabilities)];
     }
 

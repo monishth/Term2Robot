@@ -31,6 +31,15 @@ public class Node implements Comparable<Node>{
     public Node parent;
     public ArrayList<Node> neighbours;
 
+    /**
+     * Constructor for node with set values
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param f g+h
+     * @param g steps from origin
+     * @param h heuristic value
+     */
     public Node(int x, int y, double f, double g, double h){
         this.x = x;
         this.y = y;
@@ -39,10 +48,23 @@ public class Node implements Comparable<Node>{
         this.h = h;
         this.neighbours = new ArrayList<>();
     }
+
+    /**
+     * Constructor for node with set values
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     public Node(int x, int y){
         this(x, y, 0,0,0);
     }
 
+    /**
+     *
+     * overloaded compareTo method so nodes can be compared in a*
+     * @param other other node
+     *
+     */
     public int compareTo(Node other){
         return (this.f < other.f) ? -1 : (this.f > other.f) ? 1:0;
     }

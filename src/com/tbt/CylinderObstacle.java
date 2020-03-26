@@ -2,6 +2,14 @@ package com.tbt;
 
 public class CylinderObstacle extends Obstacle{
 
+    /**
+     * Constructor to find all obstacle nodes in a cylinder shape(square with radius)
+     *
+     * @param map RobotMap object
+     * @param x x coordinate center
+     * @param y y coordinate center
+     * @param nodeRadius radius(number of nodes in one direction
+     */
     public CylinderObstacle(RobotMap map, int x, int y, int nodeRadius){
         obstacleNodes.add(map.grid[x][y]);
         for(int i = 1; i < nodeRadius; i++){

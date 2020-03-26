@@ -2,20 +2,31 @@ package com.tbt;
 
 public class LineObstacle extends Obstacle {
 
+    /**
+     * Constructor to find all obstacle nodes using equation of a line and limits from 2 points
+     *
+     * @param map RobotMap object
+     * @param x1 x point 1
+     * @param y1 y point 1
+     * @param x2 x point 2
+     * @param y2 y point 2
+     * @param width width of wall on each y
+     */
     public LineObstacle(RobotMap map, int x1, int y1, int x2, int y2, int width){
+        //line is vertical
         if(x2-x1 == 0) {
             if(y1 > y2){
                 for(int i = y2; i <=y1; i++){
-                    //obstacleNodes.add(map.grid[x1][i]);
                     this.addNodeWidth(map, x1, i, width);
                 }
             }else{
                 for(int i = y1; i <=y2; i++){
-                    //obstacleNodes.add(map.grid[x1][i]);
                     this.addNodeWidth(map, x1, i, width);
                 }
             }
-        }else{
+        }
+        //any other line
+        else{
             double gradient = (((double)y2)-y1)/(x2-x1);
             System.out.println(gradient);
             double c = y1 - gradient*x1;
@@ -46,6 +57,14 @@ public class LineObstacle extends Obstacle {
         this(map, RobotMap.cmToNodeValue(x1cm), RobotMap.cmToNodeValue(x1cm), RobotMap.cmToNodeValue(x1cm), RobotMap.cmToNodeValue(x1cm),RobotMap.cmToNodeValue(x1cm));
     }
 
+    /**
+     * adds node to obstacle with neighbouring nodes to a width
+     *
+     * @param map RobotMap object
+     * @param x x coordinate of center
+     * @param y y coordinate of center
+     * @param width in x nodes on y
+     */
     private void addNodeWidth(RobotMap map, int x, int y, int width){
         for(int i = 0; i < width; i++){
             if(x+i < map.grid.length) {

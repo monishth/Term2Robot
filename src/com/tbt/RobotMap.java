@@ -7,6 +7,12 @@ public class RobotMap {
     public static final double BOARD_LENTH = 125;
 
     public Node[][] grid;
+
+    /**
+     * Constructor to create a new RobotMap object with initialised nodes with neighbour lists
+     *
+     * @param nodes_per_edge number of nodes for each side
+     */
     public RobotMap(int nodes_per_edge){
 
         grid = new Node[nodes_per_edge][nodes_per_edge];
@@ -39,10 +45,22 @@ public class RobotMap {
 
     }
 
+    /**
+     * Constructor to create a new RobotMap object with initialised nodes with neighbour lists
+     *
+     * @param lengthBoard length of map in cm
+     * @param cmPerNode lenth of node in cm
+     */
     public RobotMap(double lengthBoard, double cmPerNode){
         this((int) Math.round(lengthBoard/cmPerNode));
     }
 
+    /**
+     * Adds obstacle to map using Obstacle objects and removing any nodes within the objects as possible locations
+     *
+     * @param obstacle obstacle object to be removed from map
+     *
+     */
     public void addObstacle(Obstacle obstacle){
         for(Node obstacleNode : obstacle.obstacleNodes){
             for(Node neighbour : obstacleNode.neighbours){
@@ -52,10 +70,19 @@ public class RobotMap {
         }
     }
 
+    /**
+     * Converts distance to node index
+     *
+     * @param cm length in cm to be converted
+     * @return node index
+     */
     public static int cmToNodeValue(double cm){
         return (int) Math.round(cm/NODE_LENGTH);
     }
 
+    /**
+     * Prints the map as a text board in out stream
+     */
     public void printBoard(){
         System.out.println();
         for(int j = grid.length-1; j >= 0; j--){

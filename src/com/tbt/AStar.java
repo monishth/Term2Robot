@@ -5,6 +5,13 @@ import java.util.*;
 public class AStar {
 
 
+    /**
+     * static method given a start node and an end node performs the A* algorithm with the manhatten heuristic
+     *
+     * @param start start node
+     * @param goal goal node
+     * @return goal node. All parents will be set to take the shortest path back
+     */
     public static Node AStarSearch(Node start, Node goal){
         PriorityQueue<Node> openList = new PriorityQueue<>();
         ArrayList<Node> closedList = new ArrayList<>();
@@ -49,6 +56,12 @@ public class AStar {
 
     }
 
+    /**
+     * create list from goal node
+     *
+     * @param lastNode goal node or last node in a path calculated by a*
+     * @return list of nodes in the path from the first node to the last
+     */
     public static ArrayList<Node> pathFromLastNode(Node lastNode){
         ArrayList<Node> backwardsPath = new ArrayList<>();
         Node currentNode = lastNode;
@@ -61,6 +74,12 @@ public class AStar {
         return backwardsPath;
     }
 
+    /**
+     * Takes deltas between node vectors to find list of directions
+     *
+     * @param nodePath list of nodes in path in order
+     * @return list of directions
+     */
     public static ArrayList<Node.Direction> directionsFromPath(ArrayList<Node> nodePath){
         ArrayList<Node.Direction> directions = new ArrayList<>();
         for(int i = 0; i < nodePath.size()-1;i++){
@@ -79,30 +98,16 @@ public class AStar {
         return directions;
     }
 
+    /**
+     *
+     * manhatten heuristic
+     *
+     * @param node first node
+     * @param goal second node
+     * @return manhatten distance
+     */
     public static double heuristic(Node node, Node goal){
         return Math.abs(node.x - goal.x) + Math.abs(node.y - goal.y); //manhattan
     }
-    //astar test
-    public static void main(String[] args) {
-        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        System.out.println("Map created");
-        map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
-        // map.printBoard();
-        System.out.println("wall created");
 
-        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(52.5)][RobotMap.cmToNodeValue(2.5)], map.grid[RobotMap.cmToNodeValue(120)][RobotMap.cmToNodeValue(120)]);
-        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
-        System.out.println(Arrays.toString(endPath.toArray()));
-
-        /*RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        map.addDiagonalLineObstacle(41.7, 81.3, 120, 0);
-        map.printBoard();
-        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
-        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
-        System.out.println("Start node: 0,0");
-        for (Node.Direction dir : endPath){
-            System.out.println(dir);
-        }
-        System.out.println("End Node: " + endNode);*/
-    }
 }

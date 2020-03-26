@@ -34,20 +34,28 @@ public class Robot {
         //Setup Motors
         motorRight = new EV3LargeRegulatedMotor(MotorPort.A);
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
+        //Setup Sensors
         gyroSensor = new EV3GyroSensor(SensorPort.S1);
         touchSensor = new EV3TouchSensor(SensorPort.S3); //TODO check the sensor port, check all these parts initialise etc, do I need to initalise here?
         colourSensor = new EV3ColorSensor(SensorPort.S2);
+        //Initiate Sample Arrays
         angleSample =new float[gyroSensor.sampleSize()];
         colourSample = new float[colourSensor.sampleSize()];
         touchSample = new float[touchSensor.sampleSize()];
+        //Set base speed and directions
         motorLeft.setSpeed(90);
         motorRight.setSpeed(90);
         currentDirection = Node.Direction.NE;
+        //YOU FUCKING CUNT
 
     }
 
 
-
+    /**
+     * method to give robot a list of directions that it follows. Keeps track of the robots facing direction
+     *
+     * @param directions directions to follow
+     */
     public void followDirectionList(List<Node.Direction> directions){
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
@@ -66,6 +74,11 @@ public class Robot {
         }
     }
 
+    /**
+     * Rotates robot to a direction with respect to the current direction. Calculates the quickest direction to turn
+     *
+     * @param directionToFace direction to face
+     */
     private void rotateTo(Node.Direction directionToFace) {
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         System.out.print(currentDirection + "->" + directionToFace + ": ");
@@ -87,6 +100,11 @@ public class Robot {
         currentDirection = directionToFace;
     }
 
+    /**
+     * Rotates robot irrespective of direction to a specific angle (increments of 45)
+     *
+     * @param n number of 45 degree angles to turn
+     */
     private void rotate45(int n) {
         SampleProvider gyroSampleProvider = gyroSensor.getAngleMode();
         gyroSampleProvider.fetchSample(angleSample, 0);
@@ -120,6 +138,11 @@ public class Robot {
         motorLeft.stop();
     }
 
+    /**
+     * routine to enter box and sense colour of marking
+     *
+     * @return colour found in box
+     */
     public int enterBox(){
         rotateTo(Node.Direction.E);
         motorLeft.setSpeed(50);
@@ -146,6 +169,11 @@ public class Robot {
         }
     }
 
+    /**
+     * moves robot by distance
+     *
+     * @param distance distance to move forward in cm
+     */
     public void moveForward(double distance) {
         int angleToRotate = (int) (distance * 360/17.28);
         motorLeft.setSpeed(90);
@@ -153,7 +181,14 @@ public class Robot {
         motorRight.rotate(angleToRotate, true);
         motorLeft.rotate(angleToRotate);
     }
-//TODO still need to define the different obstacles
+
+    /**
+     * Creates plan for task 1 from localisation and predetermined path
+     *
+     * @param startingLocation index of location on bayesian strip with respect to grid
+     * @param obstacle index of predetermined obstacle
+     * @return path to box by list of directions
+     */
     private ArrayList<Node.Direction> planTask1(double startingLocation, int obstacle) {
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
@@ -176,6 +211,12 @@ public class Robot {
         return endPath;
     }
 
+    /**
+     * Creates plan for pathing from box to starting corner task 4
+     *
+     * @param colourSensed index of colour sensed inside box
+     * @return path from box to starting corner
+     */
     private ArrayList<Node.Direction> planTask4(int colourSensed){
         RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
         System.out.println("Map created");
@@ -198,27 +239,30 @@ public class Robot {
         return endPath;
     }
 
+    /**
+     * main method which executes all the tasks in order
+     */
     public static void main(String[] args) {
         Robot robot = new Robot();
-        /*//double startingLocation = ((BayesianLocalisation.findLocation(robot))*(1.75)-6);
+        double startingLocation = ((BayesianLocalisation.findLocation(robot))*(1.75)-6);
         System.out.println("Task 1 Started");
-        //System.out.println("Robot Localised: (" + startingLocation + "cm, " + startingLocation + "cm)");
+        System.out.println("Robot Localised: (" + startingLocation + "cm, " + startingLocation + "cm)");
         System.out.println("Task 1 Complete");
         System.out.println("Task 2 Started");
-        ArrayList<Node.Direction> task1Path = robot.planTask1(*//*startingLocation*//*0, 0);
+        ArrayList<Node.Direction> task1Path = robot.planTask1(startingLocation, 1);
         System.out.println("Path to tunnel planned avoiding obstacle 0");
         System.out.println("Press to start");
         Button.waitForAnyPress();
         robot.followDirectionList(task1Path); //Go to tunnel
         System.out.println("Tunnel Reached");
         System.out.println("Task 2 Complete");
-        System.out.println("Task 3 Started");*/
+        System.out.println("Task 3 Started");
         int colourSensed = robot.enterBox();
-        /*if(colourSensed == -1){
+        if(colourSensed == -1){
             System.out.println("Colour Sensing Failed");
             Button.waitForAnyPress();
             return;
-        }*/
+        }
         Button.waitForAnyPress();
         robot.moveForward(-19);
         System.out.println("Task 3 Complete");
