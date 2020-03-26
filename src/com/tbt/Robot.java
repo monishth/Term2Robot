@@ -36,7 +36,7 @@ public class Robot {
         motorLeft = new EV3LargeRegulatedMotor(MotorPort.B);
         //Setup Sensors
         gyroSensor = new EV3GyroSensor(SensorPort.S1);
-        touchSensor = new EV3TouchSensor(SensorPort.S3); //TODO check the sensor port, check all these parts initialise etc, do I need to initalise here?
+        touchSensor = new EV3TouchSensor(SensorPort.S3);
         colourSensor = new EV3ColorSensor(SensorPort.S2);
         //Initiate Sample Arrays
         angleSample =new float[gyroSensor.sampleSize()];
