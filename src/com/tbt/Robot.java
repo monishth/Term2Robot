@@ -58,15 +58,13 @@ public class Robot {
     public void followDirectionList(List<Node.Direction> directions){
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
-            if(currentDirection ==nextMovement){
+            if(currentDirection !=nextMovement){
+                rotateTo(nextMovement);
+            }
+            if (directionsAsList.indexOf(currentDirection) % 2 == 0) {
                 moveForward(RobotMap.NODE_LENGTH);
             }else{
-                rotateTo(nextMovement);
-                if (directionsAsList.indexOf(currentDirection) % 2 == 0) {
-                    moveForward(RobotMap.NODE_LENGTH);
-                }else{
-                    moveForward(RobotMap.NODE_LENGTH*1.4142136);
-                }
+                moveForward(RobotMap.NODE_LENGTH*1.4142136);
             }
 
         }
