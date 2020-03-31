@@ -7,4 +7,4 @@ to convert localised bayesian 1d coordinate to 2d x,y grid coordinates:
 
     (n*1.75)/(2/sqrt(2))
 
-red = 0 green = 2.0 white green = 6.0
+red = 0 green = 2.0 white = 6.0

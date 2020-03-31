@@ -58,7 +58,6 @@ public class Robot {
     public void followDirectionList(List<Node.Direction> directions){
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
         for(Node.Direction nextMovement : directions){
-            System.out.println(nextMovement);
             if(currentDirection ==nextMovement){
                 moveForward(RobotMap.NODE_LENGTH);
             }else{
@@ -80,7 +79,7 @@ public class Robot {
      */
     private void rotateTo(Node.Direction directionToFace) {
         List<Node.Direction> directionsAsList = Arrays.asList(Node.Direction.values());
-        System.out.print(currentDirection + "->" + directionToFace + ": ");
+        System.out.println(currentDirection + "->" + directionToFace + ": ");
         int currentIndex = directionsAsList.indexOf(currentDirection);
         int requiredDirectionIndex = directionsAsList.indexOf(directionToFace);
         if(currentIndex < requiredDirectionIndex){
@@ -107,16 +106,9 @@ public class Robot {
     private void rotate45(int n) {
         SampleProvider gyroSampleProvider = gyroSensor.getAngleMode();
         gyroSampleProvider.fetchSample(angleSample, 0);
-        System.out.println(n);
-
         float goalAngle = -1*(n*45)+angleSample[0];
         float kp =  0.8f;
-        //System.out.println("Error before reset: " + angleSample[0]);
-        //gyroSensor.reset();
-
-        //System.out.println("Error after reset: " + angleSample[0]);
         float error = goalAngle - angleSample[0];
-       // System.out.println("Error: " + error);
         while(Math.abs(error) > 0.5){
 
             motorLeft.setSpeed(40 + Math.abs(error*kp));
@@ -131,7 +123,6 @@ public class Robot {
             }
             gyroSampleProvider.fetchSample(angleSample, 0);
             error = goalAngle - angleSample[0];
-            //System.out.println("Angle: " + angleSample[0]+ " Error: " + error);
         }
         motorRight.stop(true);
         motorLeft.stop();
@@ -151,7 +142,7 @@ public class Robot {
         colourSensor.setCurrentMode("ColorID");
         colourSensor.fetchSample(colourSample, 0);
         touchSensor.fetchSample(touchSample, 0);
-        while(touchSample[0] == 0){ //whatever the measured value for green is TODO
+        while(touchSample[0] == 0){
             touchSensor.fetchSample(touchSample, 0);
         }
         motorRight.stop(true);
@@ -189,25 +180,22 @@ public class Robot {
      * @return path to box by list of directions
      */
     private ArrayList<Node.Direction> planTask1(double startingLocation, int obstacle) {
-        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
+        RobotMap map = new RobotMap();
         map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
 
         switch(obstacle){
             case 0:
-                //map.addObstacle(new CylinderObstacle(map, 0,0,0));
+                map.addObstacle(new CylinderObstacle(map, 30.9,92.1,2));
                 break;
             case 1:
-                //map.addObstacle(new CylinderObstacle(map, 0,0,0));
+                map.addObstacle(new CylinderObstacle(map, 21.7,101.3,2));
                 break;
             case 2:
-                //map.addObstacle(new CylinderObstacle(map, 0,0,0));
+                map.addObstacle(new CylinderObstacle(map, 12.5,110.5,2));
                 break;
         }
-        //Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(startingLocation)][RobotMap.cmToNodeValue(startingLocation)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
-        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(30)][RobotMap.cmToNodeValue(32)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(122.5)]);
-        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
-        System.out.println(Arrays.toString(endPath.toArray()));
-        return endPath;
+        Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(startingLocation)][RobotMap.cmToNodeValue(startingLocation)], map.grid[RobotMap.cmToNodeValue(125-55)][RobotMap.cmToNodeValue(125-5)]);
+        return directionsFromPath(pathFromLastNode(endNode));
     }
 
     /**
@@ -217,25 +205,17 @@ public class Robot {
      * @return path from box to starting corner
      */
     private ArrayList<Node.Direction> planTask4(int colourSensed){
-        RobotMap map = new RobotMap(RobotMap.BOARD_LENTH, RobotMap.NODE_LENGTH);
-        System.out.println("Map created");
+        RobotMap map = new RobotMap();
         map.addObstacle(new DiagonalLineObstacle(map, 38.0, 85.0, 120.0, 0.0)); //TODO start using new LineObstacle
-       // map.printBoard();
-        System.out.println("wall created");
 
         if(colourSensed == 0){
-            //map.addObstacle(new CylinderObstacle(map, 0,0,0));
+            map.addObstacle(new CylinderObstacle(map, 104.9,20.1,0));
         }else{
-            //map.addObstacle(new CylinderObstacle(map, 0,0,0));
+            map.addObstacle(new CylinderObstacle(map, 90.8,34.2,2));
         }
         Node endNode = AStarSearch(map.grid[RobotMap.cmToNodeValue(52.5)][RobotMap.cmToNodeValue(2.5)], map.grid[RobotMap.cmToNodeValue(120)][RobotMap.cmToNodeValue(120)]);
-        System.out.println("Search Done");
 
-        ArrayList<Node.Direction> endPath = directionsFromPath(pathFromLastNode(endNode));
-        System.out.println("Path created");
-
-        System.out.println(Arrays.toString(endPath.toArray()));
-        return endPath;
+        return directionsFromPath(pathFromLastNode(endNode));
     }
 
     /**
@@ -249,7 +229,7 @@ public class Robot {
         System.out.println("Task 1 Complete");
         System.out.println("Task 2 Started");
         ArrayList<Node.Direction> task1Path = robot.planTask1(startingLocation, 1);
-        System.out.println("Path to tunnel planned avoiding obstacle 0");
+        System.out.println("Path to tunnel planned avoiding obstacle 1");
         System.out.println("Press to start");
         Button.waitForAnyPress();
         robot.followDirectionList(task1Path); //Go to tunnel
@@ -267,8 +247,8 @@ public class Robot {
         System.out.println("Task 3 Complete");
         System.out.println("Task 4 Started");
         robot.currentDirection = Node.Direction.W;
-        ArrayList<Node.Direction> task4Path = robot.planTask4(0);
-        System.out.println("Path to finish planned avoiding obstacle " + 0);
+        ArrayList<Node.Direction> task4Path = robot.planTask4(colourSensed);
+        System.out.println("Path to finish planned avoiding obstacle " + colourSensed);
         System.out.println("Press to start");
         Button.waitForAnyPress();
         robot.followDirectionList(task4Path);

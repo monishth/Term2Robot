@@ -46,13 +46,10 @@ public class RobotMap {
     }
 
     /**
-     * Constructor to create a new RobotMap object with initialised nodes with neighbour lists
-     *
-     * @param lengthBoard length of map in cm
-     * @param cmPerNode lenth of node in cm
+     * Constructor to create a new RobotMap object with initialised nodes with neighbour lists and default values
      */
-    public RobotMap(double lengthBoard, double cmPerNode){
-        this((int) Math.round(lengthBoard/cmPerNode));
+    public RobotMap(){
+        this((int) Math.round(BOARD_LENTH/NODE_LENGTH));
     }
 
     /**
